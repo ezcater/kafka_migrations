@@ -26,7 +26,7 @@ module KafkaMigrations
     end
 
 
-    def create_topic(name, num_partitions: nil, replication_factor: nil, timeout: nil, config_entries: {})
+    def create_topic(name, num_partitions: nil, replication_factor: nil, timeout: nil, config: {})
       # TODO: direction
       # TopicCreator class? Or CommandRecorder
       num_partitions ||= 1
@@ -36,9 +36,9 @@ module KafkaMigrations
                           num_partitions: num_partitions,
                           replication_factor: replication_factor,
                           timeout: timeout,
-                          config_entries: config_entries)
+                          config: config)
       write("created topic name: #{name.inspect}, partitions: #{num_partitions}, "\
-            "replicas: #{replication_factor}, config_entries: #{config_entries}")
+            "replicas: #{replication_factor}, config: #{config}")
     end
 
     def delete_topic(name, timeout: nil)

@@ -1,19 +1,20 @@
 module KafkaMigrations
-  # TODO: this needs to be a compacted topic!
   class MigrationsTopic
-    class << self
-      # If the cluster has auto-create enabled, then
-      # Kafka::Client#has_topic? will create the topic.
-      def has_topic?(name)
-        client.topics.include?(name)
-      end
+    TOPIC_CONFIG = { "cleanup.policy" => "compact".freeze }.freeze
 
+    class << self
       def create
         return if has_topic?(name)
 
         client.create_topic(name,
                             num_partitions: 1,
-                            config_entries: { "cleanup.policy" => "compact" })
+                            config: TOPIC_CONFIG)
+      end
+
+      # If the cluster has auto-create enabled, then
+      # Kafka::Client#has_topic? will create the topic.
+      def has_topic?(name)
+        client.topics.include?(name)
       end
 
       def name

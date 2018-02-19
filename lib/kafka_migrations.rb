@@ -12,6 +12,10 @@ module KafkaMigrations
                   :seed_brokers,
                   :logger
 
+    def configure
+      yield self
+    end
+
     def client
       @client ||= Kafka.new(seed_brokers: seed_brokers,
                             logger: logger)

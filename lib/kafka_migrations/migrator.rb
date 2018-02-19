@@ -14,10 +14,6 @@ module KafkaMigrations
         File.basename(filename)
       end
 
-      # def mtime
-      #   File.mtime filename
-      # end
-
       delegate :migrate, :announce, :write, to: :migration
 
       private
@@ -43,7 +39,6 @@ module KafkaMigrations
     end
 
     attr_reader :direction
-    delegate :seed_brokers, :logger, to: "KafkaMigrations"
 
     def initialize(direction)
       @direction = direction
