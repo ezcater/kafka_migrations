@@ -1,11 +1,7 @@
 # kafka_migrations
 
-Welcome to your new gem! In this directory, you'll find the files you need to be
-able to package up your Ruby library into a gem. Put your Ruby code in the file
-`lib/kafka_migrations`. To experiment with that code, run 
-`bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem provides functionality for managing Kafka configuration via migrations
+similar to ActiveRecord migrations
 
 ## Installation
 
@@ -25,7 +21,40 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Creating migrations
+
+Migrations can be created by run the rails generator `kafka:migration`:
+
+```bash
+rails generate kafka:migration CreateDemoTopic
+      create  kafka/migrate/20180219145400_create_demo_topic.rb
+```
+
+The migration file will be created in the `kafka/migrate` directory and will be
+prefixed with a timestamp that is used to determine the order of migrations.
+
+#### Migration methods
+
+The following methods are supported in migrations:
+
+* `create_topic(name, num_partitions: 1, replication_factor: 1, timeout: 30, config: {})`
+* `delete_topic(name)`
+* `topic_exists?(name)`
+
+#### Defining migrations
+
+**Note: Only `up` migrations are currently supported.**
+
+Migrations can define either a `change` method or `up` and `down` method.
+
+```ruby
+# kafka/migrate/20180219145400_create_demo_topic.rb
+class CreateDemoTopic < KafkaMigrations::Migration
+  def up
+    create_topic("demo-topic") unless topic_exists?("demo-topic")
+  end 
+end
+```
 
 ## Development
 
