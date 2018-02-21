@@ -4,6 +4,8 @@ SimpleCov.start
 
 require "kafka_migrations"
 
+logger = Logger.new("log/test.log", :debug)
+
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
@@ -18,4 +20,11 @@ RSpec.configure do |config|
   config.default_formatter = "doc" if config.files_to_run.one?
   config.order = :random
   Kernel.srand config.seed
+
+  config.before do
+    KafkaMigrations.reset!
+    KafkaMigrations.configure do |migrations_config|
+      migrations_config.logger = logger
+    end
+  end
 end

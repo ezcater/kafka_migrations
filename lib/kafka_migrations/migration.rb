@@ -29,9 +29,10 @@ module KafkaMigrations
     def create_topic(name, num_partitions: nil, replication_factor: nil, timeout: nil, config: {})
       # TODO: direction
       # TopicCreator class? Or CommandRecorder
-      num_partitions ||= 1
-      replication_factor ||= 1
-      timeout ||= 30
+      num_partitions ||= migrations_config.num_partitions
+      replication_factor ||= migrations_config.replication_factor
+      timeout ||= migrations_config.timeout
+      config ||= config.empty? ? migrations_config.topic_config : config
       client.create_topic(name,
                           num_partitions: num_partitions,
                           replication_factor: replication_factor,
@@ -62,6 +63,10 @@ module KafkaMigrations
 
     def client
       KafkaMigrations.client
+    end
+
+    def migrations_config
+      KafkaMigrations.config
     end
 
     def write(text = "")

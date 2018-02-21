@@ -21,6 +21,10 @@ Or install it yourself as:
 
 ## Usage
 
+### Configuration
+
+# TODO
+
 ### Creating migrations
 
 Migrations can be created by run the rails generator `kafka:migration`:

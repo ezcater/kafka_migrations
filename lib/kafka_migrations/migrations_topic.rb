@@ -18,7 +18,7 @@ module KafkaMigrations
       end
 
       def name
-        @name ||= KafkaMigrations.migrations_topic_name ||
+        @name ||= KafkaMigrations.config.migrations_topic_name ||
           "_#{Rails.application.class.parent.name.underscore}_migrations"
       end
 
