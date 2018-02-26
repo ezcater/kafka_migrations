@@ -9,7 +9,8 @@ module KafkaMigrations
       sasl_plain_username: nil,
       sasl_plain_password: nil,
       ssl_ca_cert_file_path: nil,
-      config_file: nil
+      config_file: nil,
+      auto_create_enabled: true
     }.freeze
 
     DEFAULTS = OpenStruct.new(num_partitions: 1,
