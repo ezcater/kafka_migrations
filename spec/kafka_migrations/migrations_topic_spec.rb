@@ -89,10 +89,12 @@ RSpec.describe KafkaMigrations::MigrationsTopic do
 
       before do
         stub_const("Rails", rails_module)
+        # rubocop:disable RSpec/MessageChain
         allow(rails_module).to receive_message_chain(:application, :root).
           and_return("./")
         allow(rails_module).to receive_message_chain(:application, :class, :parent).
           and_return(app_module)
+        # rubocop:enable RSpec/MessageChain
       end
 
       it "returns the default Rails name" do

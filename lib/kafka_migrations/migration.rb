@@ -22,11 +22,14 @@ module KafkaMigrations
       end
 
       case direction
-      when :up   then announce "migrated (%.4fs)" % time.real; write
-      when :down then announce "reverted (%.4fs)" % time.real; write
+      when :up
+        announce format("migrated (%.4fs)", time.real)
+        write
+      when :down
+        announce format("reverted (%.4fs)", time.real)
+        write
       end
     end
-
 
     def create_topic(name, num_partitions: nil, replication_factor: nil, timeout: nil, config: {})
       # TODO: direction
@@ -79,7 +82,7 @@ module KafkaMigrations
     def announce(message)
       text = "#{version} #{name}: #{message}"
       length = [0, 75 - text.length].max
-      write "== %s %s" % [text, "=" * length]
+      write format("== %<text>s %<padding>s", text: text, padding: "=" * length)
     end
   end
 end

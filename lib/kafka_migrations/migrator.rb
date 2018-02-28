@@ -1,6 +1,6 @@
 module KafkaMigrations
   class Migrator
-    MigrationFilenameRegexp = /\A([0-9]+)_([_a-z0-9]*)\.?([_a-z0-9]*)?\.rb\z/
+    MIGRATION_FILENAME_REGEXP = /\A([0-9]+)_([_a-z0-9]*)\.?([_a-z0-9]*)?\.rb\z/
 
     # MigrationProxy is used to defer loading of the actual migration classes
     # until they are needed
@@ -78,7 +78,7 @@ module KafkaMigrations
       record_version_after_migrating(migration.version)
     rescue StandardError => ex
       msg = "An error has occurred, this and all later migrations canceled:\n\n#{ex}"
-      raise StandardError, msg, ex.backtrace
+      raise StandardError, msg, ex.backtrace # rubocop:disable Style/RaiseArgs
     end
 
     def record_version_after_migrating(version)
@@ -102,7 +102,7 @@ module KafkaMigrations
     end
 
     def parse_migration_filename(filename)
-      File.basename(filename).scan(MigrationFilenameRegexp).first
+      File.basename(filename).scan(MIGRATION_FILENAME_REGEXP).first
     end
 
     def migration_files

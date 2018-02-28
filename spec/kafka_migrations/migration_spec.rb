@@ -58,6 +58,7 @@ RSpec.describe KafkaMigrations::Migration do
 
       context "when the direction is :down" do
         let(:direction) { :down }
+
         context "when the migration implements #down" do
           before do
             migration_class.class_eval do
@@ -81,9 +82,9 @@ RSpec.describe KafkaMigrations::Migration do
     before do
       allow(kafka).to receive(:create_topic)
       KafkaMigrations.configure do |config|
-        config.num_partitions = 5,
-        config.replication_factor = 3,
-        config.timeout = 7,
+        config.num_partitions = 5
+        config.replication_factor = 3
+        config.timeout = 7
         config.topic_config = { "cleanup.policy" => "compact" }
       end
     end

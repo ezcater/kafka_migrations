@@ -25,8 +25,8 @@ module KafkaMigrations
 
       def topic_name
         @topic_name ||= KafkaMigrations.config.migrations_topic_name ||
-          (defined?(Rails) && rails_default_name) ||
-          "_kafka_migrations".freeze
+                        (defined?(Rails) && rails_default_name) ||
+                        "_kafka_migrations".freeze
       end
 
       def all_versions

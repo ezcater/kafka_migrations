@@ -1,7 +1,6 @@
 module KafkaMigrations
   module Utils
     class << self
-
       # If the cluster has auto-create enabled, then
       # Kafka::Client#has_topic? will create the topic.
       def topic?(name)

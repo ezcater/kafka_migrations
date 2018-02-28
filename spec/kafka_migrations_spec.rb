@@ -14,6 +14,7 @@ RSpec.describe KafkaMigrations do
   describe ".client" do
     let(:mock_kafka) { instance_double(Kafka::Client) }
     let(:seed_brokers) { %w(seed_brokers) }
+
     before do
       described_class.config.seed_brokers = seed_brokers
       allow(Kafka).to receive(:new).and_return(mock_kafka)

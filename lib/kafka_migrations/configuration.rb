@@ -98,15 +98,15 @@ module KafkaMigrations
         @config_file_path
       else
         @config_file_path = delegate.config_file ||
-          rails_config_kafka_migrations_value("config_file".freeze) ||
-          (defined?(Rails) && "#{Rails.application.root}/config/kafka.yml")
+                            rails_config_kafka_migrations_value("config_file".freeze) ||
+                            (defined?(Rails) && "#{Rails.application.root}/config/kafka.yml")
       end
     end
 
     def rails_config_kafka_migrations_value(name)
       defined?(Rails) &&
         Rails.configuration.kafka_migrations.key?(name) &&
-          Rails.configuration.kafka_migrations.send(name)
+        Rails.configuration.kafka_migrations.send(name)
     end
   end
 end
