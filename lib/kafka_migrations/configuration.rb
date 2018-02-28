@@ -1,7 +1,11 @@
 require "ostruct"
+require "private_attr"
+require "yaml"
 
 module KafkaMigrations
   class Configuration
+    extend PrivateAttr
+
     CONFIG_OPTIONS = {
       migrations_topic_name: nil,
       seed_brokers: nil,
@@ -10,7 +14,8 @@ module KafkaMigrations
       sasl_plain_password: nil,
       ssl_ca_cert_file_path: nil,
       config_file: nil,
-      auto_create_enabled: true
+      auto_create_enabled: true,
+      config_environment: nil
     }.freeze
 
     DEFAULTS = OpenStruct.new(num_partitions: 1,
@@ -18,7 +23,7 @@ module KafkaMigrations
                               topic_config: {}.freeze,
                               timeout: 30).freeze
 
-    attr_reader :delegate
+    private_attr_reader :delegate
 
     def initialize
       @delegate = OpenStruct.new(CONFIG_OPTIONS)
@@ -75,8 +80,17 @@ module KafkaMigrations
     def load_config_data
       return {}.freeze unless File.exist?(config_file_path.to_s)
 
-      YAML.safe_load(File.read(config_file_path), [], [], true).
-        fetch(Rails.env).with_indifferent_access
+      data = YAML.safe_load(File.read(config_file_path), [], [], true)
+
+      if config_data_environment.present?
+        data.fetch(config_data_environment)
+      else
+        data
+      end.with_indifferent_access
+    end
+
+    def config_data_environment
+      @config_data_environment ||= delegate.config_environment || (defined?(Rails) && Rails.env)
     end
 
     def config_file_path

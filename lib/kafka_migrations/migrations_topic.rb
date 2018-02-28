@@ -1,36 +1,43 @@
 module KafkaMigrations
   class MigrationsTopic
-    TOPIC_CONFIG = { "cleanup.policy" => "compact".freeze }.freeze
+    CLEANUP_POLICY = "cleanup.policy".freeze
+    COMPACT = "compact".freeze
+    TOPIC_CONFIG = { CLEANUP_POLICY => COMPACT }.freeze
+    REQUIRED_CONFIGS = [CLEANUP_POLICY].freeze
+
+    class CleanupPolicyError < StandardError
+      def initialize(topic_name)
+        super("cleanup.policy for migrations topic #{topic_name.inspect} must be 'compact'")
+      end
+    end
 
     class << self
       def create
-        return if has_topic?(name)
-
-        client.create_topic(name,
-                            num_partitions: 1,
-                            config: TOPIC_CONFIG)
+        @created ||=
+          if Utils.topic?(topic_name)
+            check_config!
+          else
+            client.create_topic(topic_name,
+                                num_partitions: 1,
+                                config: TOPIC_CONFIG)
+          end
       end
 
-      # If the cluster has auto-create enabled, then
-      # Kafka::Client#has_topic? will create the topic.
-      def has_topic?(name)
-        client.topics.include?(name)
-      end
-
-      def name
-        @name ||= KafkaMigrations.config.migrations_topic_name ||
-          "_#{Rails.application.class.parent.name.underscore}_migrations"
+      def topic_name
+        @topic_name ||= KafkaMigrations.config.migrations_topic_name ||
+          (defined?(Rails) && rails_default_name) ||
+          "_kafka_migrations".freeze
       end
 
       def all_versions
         versions = Set.new
-        return versions unless has_topic?(name)
+        return versions unless Utils.topic?(topic_name)
 
         offset = :earliest
 
         loop do
           messages = client.fetch_messages(
-            topic: name,
+            topic: topic_name,
             partition: 0,
             offset: offset,
             min_bytes: 0
@@ -55,15 +62,33 @@ module KafkaMigrations
       end
 
       def delete(version)
-        client.deliver_message(nil, key: version.to_s, topic: name, partition: 0)
+        client.deliver_message(nil, key: version.to_s, topic: topic_name, partition: 0)
       end
 
       def append(version)
         version_str = version.to_s
-        client.deliver_message(version_str, key: version_str, topic: name, partition: 0)
+        client.deliver_message(version_str, key: version_str, topic: topic_name, partition: 0)
+      end
+
+      # for test support
+      def reset!
+        @configs = nil
+        @created = nil
+        @topic_name = nil
       end
 
       private
+
+      def check_config!
+        @configs ||=
+          client.describe_topic(topic_name, REQUIRED_CONFIGS).tap do |configs|
+            raise CleanupPolicyError.new(topic_name) unless configs[CLEANUP_POLICY] == COMPACT
+          end
+      end
+
+      def rails_default_name
+        "_#{Rails.application.class.parent.name.underscore}_migrations"
+      end
 
       def client
         KafkaMigrations.client

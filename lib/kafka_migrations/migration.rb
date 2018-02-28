@@ -1,3 +1,5 @@
+require "benchmark"
+
 module KafkaMigrations
   class Migration
     attr_reader :name, :version
@@ -32,7 +34,7 @@ module KafkaMigrations
       num_partitions ||= migrations_config.num_partitions
       replication_factor ||= migrations_config.replication_factor
       timeout ||= migrations_config.timeout
-      config ||= config.empty? ? migrations_config.topic_config : config
+      config = config.empty? ? migrations_config.topic_config : config
       client.create_topic(name,
                           num_partitions: num_partitions,
                           replication_factor: replication_factor,
@@ -43,12 +45,13 @@ module KafkaMigrations
     end
 
     def delete_topic(name, timeout: nil)
+      timeout ||= migrations_config.timeout
       client.delete_topic(name, timeout: timeout || 30)
       write("deleted topic name: #{name}")
     end
 
     def topic_exists?(name)
-      client.topics.include?(name)
+      Utils.topic?(name)
     end
 
     private

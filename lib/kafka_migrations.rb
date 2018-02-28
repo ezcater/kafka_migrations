@@ -1,5 +1,6 @@
 require "ruby-kafka"
 require "kafka_migrations/version"
+require "kafka_migrations/utils"
 require "kafka_migrations/migration"
 require "kafka_migrations/migrations_topic"
 require "kafka_migrations/tasks"
@@ -33,6 +34,7 @@ module KafkaMigrations
     def reset!
       @client = nil
       @config = Configuration.new
+      MigrationsTopic.reset!
     end
   end
 end

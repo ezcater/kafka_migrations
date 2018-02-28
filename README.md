@@ -23,7 +23,36 @@ Or install it yourself as:
 
 ### Configuration
 
-# TODO
+Configuration used by the gem can be set in multiple places. The order of
+precedence in which different configuration options are used is:
+
+1. Values set directly in `KafkaMigrations`' configuration using
+  `KafkaMigrations.configure(&blk)` or `KafkaMigrations.config.configure(&blk)`.
+1. Values set as part of `Rails.configuration.kafka_migrations` if Rails is used.
+1. Values set in a YAML configuration file. In a Rails application, this file's
+  location defaults to `#{Rails.root}/config/kafka.yml`. The location for this
+  file can be configured using one of the previous options as `config_file`.
+1. Defaults from the gem.
+
+The configuration used by the gem is extensible so that additional option names
+and values can be added and referenced within migrations. The builtin options
+used by the gem are:
+
+TODO: option descriptions
+
+* **migrations_topic_name**:
+* **seed_brokers**:
+* **logger**:
+* **sasl_plain_username**:
+* **sasl_plain_password**:
+* **ssl_ca_cert_file_path**:
+* **config_file**:
+* **config_environment**:
+* **auto_create_enabled**:
+* **num_partitions**:
+* **replication_factor**:
+* **topic_config**:
+* **timeout**:
 
 ### Creating migrations
 
@@ -55,7 +84,7 @@ Migrations can define either a `change` method or `up` and `down` method.
 # kafka/migrate/20180219145400_create_demo_topic.rb
 class CreateDemoTopic < KafkaMigrations::Migration
   def up
-    create_topic("demo-topic") unless topic_exists?("demo-topic")
+    create_topic("demo-topic")
   end 
 end
 ```

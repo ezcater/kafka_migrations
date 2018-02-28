@@ -14,11 +14,9 @@ module KafkaMigrations
         File.basename(filename)
       end
 
-      def migrate
-        migration.migrate
+      def migrate(direction)
+        migration.migrate(direction)
       end
-
-      #delegate :migrate, :announce, :write, to: :migration
 
       private
 

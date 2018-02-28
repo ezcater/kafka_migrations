@@ -3,6 +3,9 @@ require "simplecov"
 SimpleCov.start
 
 require "kafka_migrations"
+require "active_support/all"
+require "fakefs/safe"
+require "fakefs/spec_helpers"
 
 logger = Logger.new("log/test.log", :debug)
 
